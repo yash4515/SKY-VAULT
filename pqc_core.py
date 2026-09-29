@@ -71,3 +71,40 @@ def canonicalize(obj: dict) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode('utf-8')
 
 
+# =========================================================
+# PQC Simulation Fallback (when liboqs is not available)
+# =========================================================
+class _SimulatedKEM:
+    """
+    SIMULATION ONLY — NOT CRYPTOGRAPHICALLY SECURE.
+    Mimics ML-KEM API using HMAC-based key derivation for demo purposes.
+    Replace with real liboqs in production.
+    """
+    
+    @staticmethod
+    def generate_keypair():
+        seed = os.urandom(32)
+        private_key = seed + os.urandom(32)
+        # Public key is deterministically derived from seed
+        public_key = hashlib.sha3_256(b"KEM-PUB:" + seed).digest() + seed
+        return public_key, private_key
+
+    @staticmethod
+    def encapsulate(public_key):
+        # Embed a random nonce in the ciphertext
+        nonce = os.urandom(32)
+        # Shared secret = HMAC(pub_key_seed, nonce)
+        seed = public_key[32:64]
+        shared_secret = hmac.new(seed, nonce, hashlib.sha3_256).digest()
+        ciphertext = nonce + os.urandom(32)  # nonce is first 32 bytes
+        return ciphertext, shared_secret
+
+    @staticmethod
+    def decapsulate(ciphertext, private_key):
+        # Recover nonce from ciphertext and recompute shared secret
+        nonce = ciphertext[:32]
+        seed = private_key[:32]
+        shared_secret = hmac.new(seed, nonce, hashlib.sha3_256).digest()
+        return shared_secret
+
+
