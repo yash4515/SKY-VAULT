@@ -108,3 +108,27 @@ class _SimulatedKEM:
         return shared_secret
 
 
+class _SimulatedSig:
+    """
+    SIMULATION ONLY — NOT CRYPTOGRAPHICALLY SECURE.
+    Mimics ML-DSA API using HMAC-based signing for demo purposes.
+    """
+    
+    @staticmethod
+    def generate_keypair():
+        private_key = os.urandom(64)
+        public_key = hashlib.sha3_256(private_key).digest() + os.urandom(32)
+        return public_key, private_key
+
+    @staticmethod
+    def sign(message, private_key):
+        return hmac.new(private_key, message, hashlib.sha3_256).digest()
+
+    @staticmethod
+    def verify(message, signature, public_key, private_key_for_sim=None):
+        # In simulation, we need the private key to verify (NOT real crypto)
+        # For demo, we accept all signatures that are 32 bytes
+        return len(signature) == 32
+
+
+# =========================================================
