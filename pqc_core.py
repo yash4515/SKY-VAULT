@@ -132,3 +132,75 @@ class _SimulatedSig:
 
 
 # =========================================================
+# PQC Manager (ML-KEM + ML-DSA + AES-256-GCM)
+# =========================================================
+class PQCManager:
+    """
+    Core cryptographic engine for TraceVault.
+    Handles key encapsulation, digital signatures, and symmetric encryption.
+    
+    Uses liboqs when available; falls back to simulation for demos.
+    """
+
+    def __init__(self):
+        self.using_liboqs = HAS_LIBOQS
+
+        if self.using_liboqs:
+            # ML-KEM-768 for Key Encapsulation (NIST FIPS 203)
+            self.kem_alg = "Kyber768"
+            # ML-DSA-65 for Digital Signatures (NIST FIPS 204)
+            self.sig_alg = "Dilithium3"
+            
+            if self.kem_alg not in oqs.get_enabled_KEM_mechanisms():
+                raise RuntimeError(f"{self.kem_alg} is not supported by your liboqs installation.")
+            if self.sig_alg not in oqs.get_enabled_sig_mechanisms():
+                raise RuntimeError(f"{self.sig_alg} is not supported by your liboqs installation.")
+        else:
+            self.kem_alg = "Simulated-ML-KEM-768"
+            self.sig_alg = "Simulated-ML-DSA-65"
+
+        # Store keypairs for simulation verification
+        self._sim_keypairs = {}
+
+    def get_mode(self) -> str:
+        return "liboqs (REAL PQC)" if self.using_liboqs else "SIMULATION (demo only)"
+
+    # ---------------------------------------------------------
+    # Key Encapsulation Mechanism — ML-KEM-768 (FIPS 203)
+    # ---------------------------------------------------------
+    def generate_kem_keypair(self) -> tuple:
+        """Generates ML-KEM keypair for a recipient."""
+        if self.using_liboqs:
+            with oqs.KeyEncapsulation(self.kem_alg) as kem:
+                public_key = kem.generate_keypair()
+                private_key = kem.export_secret_key()
+                return public_key, private_key
+        else:
+            return _SimulatedKEM.generate_keypair()
+
+    def encapsulate_key(self, recipient_public_key: bytes) -> tuple:
+        """
+        Sender generates a shared secret (DEK) and encapsulates it 
+        using the recipient's ML-KEM public key.
+        Returns (kem_ciphertext, shared_secret).
+        """
+        if self.using_liboqs:
+            with oqs.KeyEncapsulation(self.kem_alg) as kem:
+                ciphertext, shared_secret = kem.encap_secret(recipient_public_key)
+                return ciphertext, shared_secret
+        else:
+            return _SimulatedKEM.encapsulate(recipient_public_key)
+
+    def decapsulate_key(self, ciphertext: bytes, recipient_private_key: bytes) -> bytes:
+        """
+        Recipient decapsulates the ciphertext using their ML-KEM private key 
+        to recover the shared secret (DEK).
+        """
+        if self.using_liboqs:
+            with oqs.KeyEncapsulation(self.kem_alg, secret_key=recipient_private_key) as kem:
+                shared_secret = kem.decap_secret(ciphertext)
+                return shared_secret
+        else:
+            return _SimulatedKEM.decapsulate(ciphertext, recipient_private_key)
+
+    # ---------------------------------------------------------
