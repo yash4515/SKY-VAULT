@@ -332,3 +332,34 @@ class DecryptionEvent:
 
 
 # =========================================================
+# End-to-End Smoke Test
+# =========================================================
+if __name__ == "__main__":
+    print("=" * 60)
+    print("  TRACEVAULT — PQC Core Smoke Test")
+    print("=" * 60)
+
+    pqc = PQCManager()
+    print(f"\n  Mode: {pqc.get_mode()}")
+
+    # Quick round-trip test
+    kem_pub, kem_priv = pqc.generate_kem_keypair()
+    sig_pub, sig_priv = pqc.generate_sig_keypair()
+    print(f"  KEM keypair: {len(kem_pub)}B pub, {len(kem_priv)}B priv")
+    print(f"  Sig keypair: {len(sig_pub)}B pub, {len(sig_priv)}B priv")
+
+    ct, ss = pqc.encapsulate_key(kem_pub)
+    ss2 = pqc.decapsulate_key(ct, kem_priv)
+    print(f"  KEM round-trip: {'PASS' if ss == ss2 else 'FAIL'}")
+
+    msg = b"test message"
+    sig = pqc.sign(msg, sig_priv)
+    valid = pqc.verify(msg, sig, sig_pub)
+    print(f"  Sig round-trip: {'PASS' if valid else 'FAIL'}")
+
+    dek = PQCManager.generate_dek()
+    nonce, enc = PQCManager.encrypt_document(dek, msg)
+    dec = PQCManager.decrypt_document(dek, nonce, enc)
+    print(f"  AES round-trip: {'PASS' if dec == msg else 'FAIL'}")
+
+    print(f"\n  All tests passed!" if (ss == ss2 and valid and dec == msg) else "\n  SOME TESTS FAILED!")
