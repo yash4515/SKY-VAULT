@@ -204,3 +204,43 @@ class PQCManager:
             return _SimulatedKEM.decapsulate(ciphertext, recipient_private_key)
 
     # ---------------------------------------------------------
+    # Digital Signatures — ML-DSA-65 (FIPS 204)
+    # ---------------------------------------------------------
+    def generate_sig_keypair(self) -> tuple:
+        """Generates ML-DSA keypair for a user."""
+        if self.using_liboqs:
+            with oqs.Signature(self.sig_alg) as sig:
+                public_key = sig.generate_keypair()
+                private_key = sig.export_secret_key()
+                return public_key, private_key
+        else:
+            pub, priv = _SimulatedSig.generate_keypair()
+            # Store for verification
+            pub_id = pub.hex()[:16]
+            self._sim_keypairs[f"sig_{pub_id}"] = priv
+            return pub, priv
+
+    def sign(self, message: bytes, private_key: bytes) -> bytes:
+        """Signs a message using ML-DSA private key."""
+        if self.using_liboqs:
+            with oqs.Signature(self.sig_alg, secret_key=private_key) as sig:
+                signature = sig.sign(message)
+                return signature
+        else:
+            return _SimulatedSig.sign(message, private_key)
+
+    def verify(self, message: bytes, signature: bytes, public_key: bytes) -> bool:
+        """Verifies an ML-DSA signature."""
+        if self.using_liboqs:
+            with oqs.Signature(self.sig_alg) as sig:
+                return sig.verify(message, signature, public_key)
+        else:
+            # In simulation, re-sign and compare
+            pub_id = public_key.hex()[:16]
+            priv = self._sim_keypairs.get(f"sig_{pub_id}")
+            if priv:
+                expected = _SimulatedSig.sign(message, priv)
+                return hmac.compare_digest(signature, expected)
+            return False
+
+    # ---------------------------------------------------------
