@@ -100,3 +100,119 @@ class TardosCodeGenerator:
         }
 
 
+class FingerprintGenerator:
+    """
+    Two-layer fingerprint identity model (Section 7.1):
+    
+    Layer 1 — recipient_code: Long-lived, derived from recipient identity
+              and distribution context. Optionally uses Tardos codes for
+              collusion resistance.
+    
+    Layer 2 — session_nonce: Fresh per-decryption CSPRNG value.
+    
+    session_id = H(document_id || recipient_code || session_nonce || event_nonce)
+    
+    watermark_payload = Encode(recipient_code, session_id, document_version, integrity_binding)
+    """
+
+    def __init__(self, num_recipients: int = 10, max_colluders: int = 3):
+        self.tardos = TardosCodeGenerator(num_recipients, max_colluders)
+
+    def generate_recipient_code(
+        self,
+        recipient_id: str,
+        distribution_id: str,
+        policy_version: str = "1.0",
+    ) -> str:
+        """
+        Long-lived recipient fingerprint component.
+        Derived deterministically from recipient identity + distribution context.
+        """
+        data = f"{recipient_id}|{distribution_id}|{policy_version}".encode("utf-8")
+        return hashlib.sha3_256(data).hexdigest()
+
+    def generate_session_fingerprint(
+        self, document_id: str, recipient_code: str
+    ) -> dict:
+        """
+        Generates a fresh per-decryption session fingerprint.
+        
+        Returns:
+            dict with session_nonce, event_nonce, session_id, watermark_id
+        """
+        session_nonce = secrets.token_hex(32)  # 256-bit
+        event_nonce = secrets.token_hex(16)    # 128-bit
+
+        # session_id = H(document_id || recipient_code || session_nonce || event_nonce)
+        session_input = (
+            f"{document_id}||{recipient_code}||{session_nonce}||{event_nonce}"
+        ).encode("utf-8")
+        session_id = hashlib.sha3_256(session_input).hexdigest()
+
+        watermark_id = f"WM-{session_id[:16]}"
+
+        return {
+            "session_nonce": session_nonce,
+            "event_nonce": event_nonce,
+            "session_id": session_id,
+            "watermark_id": watermark_id,
+        }
+
+    def build_watermark_payload(
+        self,
+        recipient_code: str,
+        session_id: str,
+        document_version: int,
+        recipient_index: int = 0,
+    ) -> bytes:
+        """
+        Construct the watermark payload to be embedded:
+        
+        watermark_payload = Encode(
+            recipient_code,
+            session_id,
+            document_version,
+            integrity_binding
+        )
+        
+        Returns payload as bytes (to be ECC-encoded before embedding).
+        """
+        # Include Tardos code bits for collusion resistance
+        tardos_code = self.tardos.generate_code(recipient_index)
+        tardos_hex = bytes(tardos_code).hex()[:32]  # First 128 bits
+
+        # Integrity binding: hash of all components
+        integrity_data = f"{recipient_code}|{session_id}|{document_version}|{tardos_hex}"
+        integrity_binding = hashlib.sha3_256(integrity_data.encode()).hexdigest()[:16]
+
+        payload = {
+            "rc": recipient_code[:16],      # Recipient code prefix
+            "sid": session_id[:16],          # Session ID prefix
+            "dv": document_version,          # Document version
+            "tc": tardos_hex[:16],           # Tardos code prefix
+            "ib": integrity_binding,         # Integrity binding
+        }
+
+        import json
+        payload_bytes = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+        return payload_bytes
+
+
+if __name__ == "__main__":
+    print("=== Fingerprint Generator Test ===\n")
+
+    fg = FingerprintGenerator(num_recipients=10, max_colluders=3)
+    print(f"Tardos code params: {fg.tardos.params}\n")
+
+    # Generate codes for 3 recipients
+    for name in ["Alice", "Bob", "Charlie"]:
+        rc = fg.generate_recipient_code(f"RID-{name}", "DIST-001")
+        session = fg.generate_session_fingerprint("DOC-001", rc)
+        payload = fg.build_watermark_payload(rc, session["session_id"], 17)
+
+        print(f"{name}:")
+        print(f"  Recipient Code: {rc[:32]}...")
+        print(f"  Session ID:     {session['session_id'][:32]}...")
+        print(f"  Watermark ID:   {session['watermark_id']}")
+        print(f"  Payload size:   {len(payload)} bytes")
+        print()
