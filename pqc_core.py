@@ -244,3 +244,33 @@ class PQCManager:
             return False
 
     # ---------------------------------------------------------
+    # Symmetric Encryption — AES-256-GCM
+    # ---------------------------------------------------------
+    @staticmethod
+    def generate_dek() -> bytes:
+        """Generate a random 256-bit Document Encryption Key."""
+        return os.urandom(32)
+
+    @staticmethod
+    def encrypt_document(dek: bytes, plaintext: bytes) -> tuple:
+        """
+        Encrypts a document using AES-256-GCM.
+        Returns (nonce, ciphertext_with_tag).
+        """
+        aesgcm = AESGCM(dek)
+        nonce = os.urandom(12)  # 96-bit nonce for GCM
+        ciphertext = aesgcm.encrypt(nonce, plaintext, None)
+        return nonce, ciphertext
+
+    @staticmethod
+    def decrypt_document(dek: bytes, nonce: bytes, ciphertext: bytes) -> bytes:
+        """
+        Decrypts the document IN MEMORY using AES-256-GCM.
+        The returned plaintext must be watermarked before any disk I/O.
+        """
+        aesgcm = AESGCM(dek)
+        plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+        return plaintext
+
+
+# =========================================================
