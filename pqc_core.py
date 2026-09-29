@@ -274,3 +274,61 @@ class PQCManager:
 
 
 # =========================================================
+# Canonical Decryption Event (Section 6.3)
+# =========================================================
+class DecryptionEvent:
+    """
+    Represents the canonical decryption event as defined in 
+    TraceVault spec Section 6.3 and Section 10.4 (Ledger record).
+    """
+
+    def __init__(
+        self,
+        document_id: str,
+        document_version: int,
+        document_hash: str,
+        recipient_key_id: str,
+        session_id: str,
+        session_nonce: str,
+        watermark_id: str,
+        watermark_profile: str,
+        output_hash: str,
+    ):
+        self.event = {
+            "schema_version": "1.0",
+            "event_id": str(uuid.uuid4()),
+            "document_id": document_id,
+            "document_version": document_version,
+            "document_hash": document_hash,
+            "recipient_key_id": recipient_key_id,
+            "session_id": session_id,
+            "session_nonce": session_nonce,
+            "event_timestamp": datetime.now(timezone.utc).isoformat(),
+            "watermark_id": watermark_id,
+            "watermark_profile": watermark_profile,
+            "output_hash": output_hash,
+            "signature_algorithm": "ML-DSA-65",
+        }
+
+    def get_digest(self) -> bytes:
+        """
+        event_digest = SHA3-256(canonicalize(event))
+        """
+        canonical = canonicalize(self.event)
+        return hashlib.sha3_256(canonical).digest()
+
+    def sign(self, pqc: PQCManager, private_key: bytes) -> bytes:
+        """
+        signature = ML-DSA.Sign(recipient_private_key, event_digest)
+        """
+        digest = self.get_digest()
+        return pqc.sign(digest, private_key)
+
+    def to_ledger_record(self, signature: bytes) -> dict:
+        """Returns the full record to be committed to the BFT ledger."""
+        record = dict(self.event)
+        record["signature"] = signature.hex()
+        return record
+
+
+# =========================================================
