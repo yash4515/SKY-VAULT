@@ -294,7 +294,108 @@ def main():
     print(f"  Chain valid:  {chain['chain_valid']}")
 
     # ═══════════════════════════════════════════════════════════
-    print("\n  [Phases 0-10 complete. Phase 11-15 available in full release.]")
+    # STEP 11: Simulate Leak
+    # ═══════════════════════════════════════════════════════════
+    phase(11, "SIMULATE DOCUMENT LEAK")
+
+    leaked_document = watermarked_text  # Bob's watermarked copy is "leaked"
+    print(f"  ⚠ {leaker}'s watermarked copy has been leaked!")
+    print(f"  Leaked document size: {len(leaked_document)} chars")
+    visible_text = TextWatermark.strip_watermark(leaked_document)
+    print(f"  Visible content preview:")
+    print(f"    \"{visible_text[:80]}...\"")
+
+    # ═══════════════════════════════════════════════════════════
+    # STEP 12: Extract Fingerprint from Leaked Copy
+    # ═══════════════════════════════════════════════════════════
+    phase(12, "Forensic Extraction from Leaked Document")
+
+    extraction_result = extractor.extract_from_text(leaked_document)
+
+    print(f"  Extraction result: {extraction_result['result']}")
+    print(f"  Leaked hash:       {extraction_result['leaked_hash'][:50]}...")
+
+    if extraction_result["payload"]:
+        print(f"  Payload recovered: {len(extraction_result['payload'])} bytes")
+        print(f"  ZWC count:         {extraction_result['zwc_count']}")
+        recovered_data = extraction_result.get("watermark_data", {})
+        print(f"  Watermark data:    {json.dumps(recovered_data, indent=4)[:200]}")
+
+    # ═══════════════════════════════════════════════════════════
+    # STEP 13: Find Event in Ledger
+    # ═══════════════════════════════════════════════════════════
+    phase(13, "Ledger Lookup — Find Matching Event")
+
+    # Use the watermark_id from the event (in real scenario, we'd reconstruct it from payload)
+    lookup_wm_id = session["watermark_id"]
+    ledger_match = ledger.lookup_by_watermark(lookup_wm_id)
+
+    if ledger_match:
+        print(f"  ✓ Match found!")
+        print(f"    Block ID:       {ledger_match['block_id']}")
+        print(f"    Block Hash:     {ledger_match['block_hash'][:32]}...")
+        print(f"    Event ID:       {ledger_match['event_data']['event_id']}")
+        print(f"    Recipient Key:  {ledger_match['event_data']['recipient_key_id']}")
+        print(f"    Timestamp:      {ledger_match['event_data']['event_timestamp']}")
+    else:
+        print(f"  ✗ No matching event found in ledger!")
+
+    # ═══════════════════════════════════════════════════════════
+    # STEP 14: Verify Signature and Hashes
+    # ═══════════════════════════════════════════════════════════
+    phase(14, "Cryptographic Verification (Full Evidence Chain)")
+
+    verifier = ForensicVerifier(
+        pqc_manager=pqc,
+        ledger=ledger,
+        key_registry=key_registry,
+    )
+
+    verification = verifier.verify_evidence_chain(
+        watermark_id=lookup_wm_id,
+        document_hash=document_hash,
+        leaked_artifact_hash=extraction_result["leaked_hash"],
+    )
+
+    # ═══════════════════════════════════════════════════════════
+    # STEP 15: Produce Forensic Report
+    # ═══════════════════════════════════════════════════════════
+    phase(15, "Generate Forensic Report")
+
+    print(verifier.format_report(verification))
+
+    # Generate evidence package
+    evidence = verifier.generate_evidence_package(verification)
+    print(f"  Evidence package generated ({len(json.dumps(evidence))} bytes)")
+
+    # ═══════════════════════════════════════════════════════════
+    # ATTRIBUTION
+    # ═══════════════════════════════════════════════════════════
+    if verification["result"] == "CRYPTOGRAPHICALLY VERIFIED":
+        attributed_key = verification.get("recipient_key_id", "unknown")
+        attributed_name = None
+        for name, keys in recipients.items():
+            if keys["key_id"] == attributed_key:
+                attributed_name = name
+                break
+
+        banner(f"ATTRIBUTION: {attributed_name or attributed_key}")
+        print(f"  The leaked document has been cryptographically traced to")
+        print(f"  the decryption event authenticated by: {attributed_name}")
+        print(f"  Key ID: {attributed_key}")
+        print(f"")
+        print(f"  Note: This establishes that {attributed_name}'s credential")
+        print(f"  authenticated the decryption event. It does not prove")
+        print(f"  that {attributed_name} intentionally leaked the file.")
+    else:
+        banner(f"RESULT: {verification['result']}")
+
+    # Cleanup
+    ledger.close()
+    print(f"\n{'═' * 65}")
+    print(f"  MVP Demo Complete")
+    print(f"{'═' * 65}\n")
+
 
 if __name__ == "__main__":
     main()
