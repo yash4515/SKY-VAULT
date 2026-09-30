@@ -1,10 +1,10 @@
 """
-TraceVault — Forensic Extractor
+SKY-VAULT - Forensic Extractor
 ================================
 Extracts forensic watermark payloads from leaked documents and
 resolves them to ledger events.
 
-Reference: TraceVault spec Section 13 — Forensic Investigation Workflow.
+Reference: SKY-VAULT spec Section 13 - Forensic Investigation Workflow.
 
 Steps:
   1. Acquire leaked artifact.
@@ -41,7 +41,7 @@ class ForensicExtractor:
     Supports text, image, and PDF extraction.
     """
 
-    def __init__(self, seed_key: bytes = b"tracevault-default-key"):
+    def __init__(self, seed_key: bytes = b"sky-vault-default-key"):
         self.seed_key = seed_key
         self.text_wm = TextWatermark()
         self.image_wm = ImageWatermark(seed_key=seed_key)

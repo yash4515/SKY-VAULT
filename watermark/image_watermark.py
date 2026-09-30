@@ -1,5 +1,5 @@
 """
-TraceVault — Image Watermark Engine (DWT/DCT Domain Embedding)
+SKY-VAULT - Image Watermark Engine (DWT/DCT Domain Embedding)
 ===============================================================
 Embeds invisible forensic fingerprint payload into images using
 frequency-domain watermarking (DWT + DCT) with Reed-Solomon ECC.
@@ -59,7 +59,7 @@ class ImageWatermark:
         self,
         ecc_symbols: int = RS_NSYM,
         alpha: float = ALPHA,
-        seed_key: bytes = b"tracevault-default-key",
+        seed_key: bytes = b"sky-vault-default-key",
     ):
         """
         Args:
@@ -74,7 +74,7 @@ class ImageWatermark:
             hashlib.sha3_256(seed_key).digest()[:8], "big"
         )
 
-    # ─── Payload Preparation ─────────────────────────────────
+    # --- Payload Preparation ---------------------------------
 
     def _prepare_payload(self, payload: bytes) -> np.ndarray:
         """
@@ -107,7 +107,7 @@ class ImageWatermark:
         except Exception:
             return None
 
-    # ─── Pseudo-random Spreading ─────────────────────────────
+    # --- Pseudo-random Spreading -----------------------------
 
     def _generate_pn_sequence(self, length: int) -> np.ndarray:
         """Generate a pseudo-random ±1 sequence keyed by the secret."""
@@ -120,7 +120,7 @@ class ImageWatermark:
         positions = rng.permutation(total)[:num_positions]
         return np.sort(positions)
 
-    # ─── DWT/DCT Embedding ───────────────────────────────────
+    # --- DWT/DCT Embedding -----------------------------------
 
     def embed(self, image: Image.Image, payload: bytes) -> Image.Image:
         """
@@ -207,7 +207,7 @@ class ImageWatermark:
 
         return result
 
-    # ─── DWT/DCT Extraction ──────────────────────────────────
+    # --- DWT/DCT Extraction ----------------------------------
 
     def extract(
         self,
@@ -285,7 +285,7 @@ class ImageWatermark:
 
         return np.array(bits[:ecc_bit_length])
 
-    # ─── Color Space Conversion ──────────────────────────────
+    # --- Color Space Conversion ------------------------------
 
     @staticmethod
     def _rgb_to_ycbcr(rgb: np.ndarray) -> np.ndarray:
@@ -312,7 +312,7 @@ class ImageWatermark:
         rgb = ycbcr_shifted @ xform_inv.T
         return rgb
 
-    # ─── Quality Metrics (Section 20.2) ──────────────────────
+    # --- Quality Metrics (Section 20.2) ----------------------
 
     @staticmethod
     def compute_psnr(original: Image.Image, watermarked: Image.Image) -> float:
@@ -373,4 +373,4 @@ if __name__ == "__main__":
     extracted = iw.extract(test_img, watermarked, len(payload))
     print(f"Extracted payload: {extracted}")
     print(f"Match: {extracted == payload}")
-    print(f"\n{'✓ Round-trip successful!' if extracted == payload else '✗ Round-trip FAILED!'}")
+    print(f"\n{'[PASS] Round-trip successful!' if extracted == payload else '[FAIL] Round-trip FAILED!'}")

@@ -1,5 +1,5 @@
 """
-TraceVault — Full MVP Demo (Section 22)
+SKY-VAULT - Full MVP Demo (Section 22)
 ========================================
 End-to-end demonstration of the complete evidence chain:
 
@@ -20,7 +20,7 @@ End-to-end demonstration of the complete evidence chain:
   15. Produce forensic report.
 
 "The MVP should first demonstrate correctness, not claim 
- military-grade watermark robustness." — Section 22
+ military-grade watermark robustness." - Section 22
 """
 
 import sys
@@ -40,45 +40,45 @@ from forensics.verifier import ForensicVerifier
 
 
 def banner(text: str):
-    print(f"\n{'═' * 65}")
+    print(f"\n{'=' * 65}")
     print(f"  {text}")
-    print(f"{'═' * 65}")
+    print(f"{'=' * 65}")
 
 
 def phase(num: int, title: str):
-    print(f"\n{'─' * 65}")
+    print(f"\n{'-' * 65}")
     print(f"  Phase {num}: {title}")
-    print(f"{'─' * 65}")
+    print(f"{'-' * 65}")
 
 
 def main():
-    banner("TRACEVAULT — Full MVP Demo")
+    banner("SKY-VAULT - Full MVP Demo")
     print("  Post-Quantum Forensic Attribution System")
     print("  Air-Gapped · In-Memory · Immutable Ledger")
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # SETUP: Initialize subsystems
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     phase(0, "Initialize Subsystems")
 
     pqc = PQCManager()
-    print("  ✓ PQC Manager initialized (ML-KEM-768 + ML-DSA-65)")
+    print("  [PASS] PQC Manager initialized (ML-KEM-768 + ML-DSA-65)")
 
     fp_gen = FingerprintGenerator(num_recipients=10, max_colluders=3)
-    print(f"  ✓ Fingerprint Generator initialized (Tardos code length: {fp_gen.tardos.code_length})")
+    print(f"  [PASS] Fingerprint Generator initialized (Tardos code length: {fp_gen.tardos.code_length})")
 
     text_wm = TextWatermark()
-    print("  ✓ Text Watermark Engine initialized (ZWC + Reed-Solomon)")
+    print("  [PASS] Text Watermark Engine initialized (ZWC + Reed-Solomon)")
 
     ledger = LocalLedger(":memory:")
-    print(f"  ✓ Local Ledger initialized (chain height: {ledger.get_chain_summary()['chain_height']})")
+    print(f"  [PASS] Local Ledger initialized (chain height: {ledger.get_chain_summary()['chain_height']})")
 
     extractor = ForensicExtractor()
-    print("  ✓ Forensic Extractor initialized")
+    print("  [PASS] Forensic Extractor initialized")
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # STEP 1-2: Register Recipients and Generate Keys
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     phase(1, "Register Recipients (Alice, Bob, Charlie)")
 
     recipients = {}
@@ -98,21 +98,21 @@ def main():
         }
         key_registry[key_id] = sig_pub
 
-        print(f"  ✓ {name}")
+        print(f"  [PASS] {name}")
         print(f"    Key ID:      {key_id}")
         print(f"    ML-KEM pub:  {len(kem_pub)} bytes")
         print(f"    ML-DSA pub:  {len(sig_pub)} bytes")
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # STEP 3: Encrypt Document
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     phase(3, "Encrypt Document with AES-256-GCM")
 
     document_text = (
-        "STRICTLY CONFIDENTIAL — PROJECT TRACEVAULT\n"
+        "STRICTLY CONFIDENTIAL - PROJECT SKY-VAULT\n"
         "\n"
         "This document contains the complete architectural specification "
-        "for the TraceVault forensic attribution system. The system provides "
+        "for the SKY-VAULT forensic attribution system. The system provides "
         "cryptographically verifiable attribution of leaked documents to "
         "authenticated decryption events using post-quantum cryptography, "
         "invisible forensic watermarking, and a permissioned BFT distributed "
@@ -138,11 +138,11 @@ def main():
     print(f"  Encrypted:     {len(encrypted_doc)} bytes")
     print(f"  Doc Hash:      {document_hash[:50]}...")
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # STEP 4: Wrap DEK for Each Recipient (ML-KEM)
     # Per Section 6.2: KEM establishes a shared secret, which is
     # then used to XOR-wrap the DEK for each recipient.
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     phase(4, "Wrap DEK for Recipients via ML-KEM")
 
     wrapped_keys = {}
@@ -154,11 +154,11 @@ def main():
             "kem_ciphertext": kem_ct,
             "wrapped_dek": wrapped_dek,
         }
-        print(f"  ✓ DEK wrapped for {name} ({len(kem_ct)} bytes KEM ciphertext)")
+        print(f"  [PASS] DEK wrapped for {name} ({len(kem_ct)} bytes KEM ciphertext)")
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # STEP 5-10: Bob Requests Decryption (Full Flow)
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     leaker = "Bob"
     phase(5, f"{leaker} Requests Decryption")
 
@@ -171,8 +171,8 @@ def main():
         a ^ b for a, b in zip(wrapped_keys[leaker]["wrapped_dek"], recovered_shared_secret[:32])
     )
     assert recipient_aes_key == dek, "DEK unwrap failed!"
-    print(f"  ✓ {leaker} decapsulated shared secret via ML-KEM")
-    print(f"  ✓ {leaker} unwrapped DEK successfully")
+    print(f"  [PASS] {leaker} decapsulated shared secret via ML-KEM")
+    print(f"  [PASS] {leaker} unwrapped DEK successfully")
 
     # Step 6: Generate session fingerprint
     phase(6, "Generate Session Fingerprint")
@@ -196,14 +196,14 @@ def main():
     phase(7, "Decrypt In-Memory → Watermark → Render")
 
     plaintext = PQCManager.decrypt_document(recipient_aes_key, nonce, encrypted_doc)
-    print(f"  ✓ Document decrypted in-memory ({len(plaintext)} bytes)")
-    print(f"    ⚠ Plaintext exists ONLY in RAM — never touches disk")
+    print(f"  [PASS] Document decrypted in-memory ({len(plaintext)} bytes)")
+    print(f"    [WARN] Plaintext exists ONLY in RAM - never touches disk")
 
     # Apply text watermark (ZWC steganography)
     plaintext_str = plaintext.decode("utf-8")
     watermarked_text = text_wm.embed(plaintext_str, watermark_payload, position="distributed")
 
-    print(f"  ✓ Forensic watermark embedded via ZWC steganography")
+    print(f"  [PASS] Forensic watermark embedded via ZWC steganography")
     print(f"    Original chars:    {len(plaintext_str)}")
     print(f"    Watermarked chars: {len(watermarked_text)}")
     print(f"    Hidden chars:      {TextWatermark.get_zwc_count(watermarked_text)}")
@@ -211,7 +211,7 @@ def main():
 
     # Clear raw plaintext from memory immediately
     del plaintext, plaintext_str
-    print(f"  ✓ Raw plaintext purged from memory")
+    print(f"  [PASS] Raw plaintext purged from memory")
 
     # Step 8: Hash final output
     phase(8, "Hash Watermarked Output")
@@ -243,7 +243,7 @@ def main():
     # Verify signature immediately
     event_digest = event.get_digest()
     is_valid = pqc.verify(event_digest, signature, recipients[leaker]["sig_pub"])
-    print(f"  Sig verify:  {'PASSED ✓' if is_valid else 'FAILED ✗'}")
+    print(f"  Sig verify:  {'PASSED [PASS]' if is_valid else 'FAILED [FAIL]'}")
 
     # Step 10: Commit to ledger
     phase(10, "Commit Event to Local Permissioned Ledger")
@@ -286,28 +286,28 @@ def main():
         )
         other_sig = other_event.sign(pqc, recipients[name]["sig_priv"])
         other_receipt = ledger.commit_event(other_event.to_ledger_record(other_sig))
-        print(f"  ✓ {name}: Block #{other_receipt['block_id']} (WM: {other_session['watermark_id']})")
+        print(f"  [PASS] {name}: Block #{other_receipt['block_id']} (WM: {other_session['watermark_id']})")
         del other_plain  # Clear plaintext
 
     chain = ledger.get_chain_summary()
     print(f"\n  Chain height: {chain['chain_height']} blocks")
     print(f"  Chain valid:  {chain['chain_valid']}")
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # STEP 11: Simulate Leak
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     phase(11, "SIMULATE DOCUMENT LEAK")
 
     leaked_document = watermarked_text  # Bob's watermarked copy is "leaked"
-    print(f"  ⚠ {leaker}'s watermarked copy has been leaked!")
+    print(f"  [WARN] {leaker}'s watermarked copy has been leaked!")
     print(f"  Leaked document size: {len(leaked_document)} chars")
     visible_text = TextWatermark.strip_watermark(leaked_document)
     print(f"  Visible content preview:")
     print(f"    \"{visible_text[:80]}...\"")
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # STEP 12: Extract Fingerprint from Leaked Copy
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     phase(12, "Forensic Extraction from Leaked Document")
 
     extraction_result = extractor.extract_from_text(leaked_document)
@@ -321,28 +321,28 @@ def main():
         recovered_data = extraction_result.get("watermark_data", {})
         print(f"  Watermark data:    {json.dumps(recovered_data, indent=4)[:200]}")
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # STEP 13: Find Event in Ledger
-    # ═══════════════════════════════════════════════════════════
-    phase(13, "Ledger Lookup — Find Matching Event")
+    # ===========================================================
+    phase(13, "Ledger Lookup - Find Matching Event")
 
     # Use the watermark_id from the event (in real scenario, we'd reconstruct it from payload)
     lookup_wm_id = session["watermark_id"]
     ledger_match = ledger.lookup_by_watermark(lookup_wm_id)
 
     if ledger_match:
-        print(f"  ✓ Match found!")
+        print(f"  [PASS] Match found!")
         print(f"    Block ID:       {ledger_match['block_id']}")
         print(f"    Block Hash:     {ledger_match['block_hash'][:32]}...")
         print(f"    Event ID:       {ledger_match['event_data']['event_id']}")
         print(f"    Recipient Key:  {ledger_match['event_data']['recipient_key_id']}")
         print(f"    Timestamp:      {ledger_match['event_data']['event_timestamp']}")
     else:
-        print(f"  ✗ No matching event found in ledger!")
+        print(f"  [FAIL] No matching event found in ledger!")
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # STEP 14: Verify Signature and Hashes
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     phase(14, "Cryptographic Verification (Full Evidence Chain)")
 
     verifier = ForensicVerifier(
@@ -357,9 +357,9 @@ def main():
         leaked_artifact_hash=extraction_result["leaked_hash"],
     )
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # STEP 15: Produce Forensic Report
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     phase(15, "Generate Forensic Report")
 
     print(verifier.format_report(verification))
@@ -368,9 +368,9 @@ def main():
     evidence = verifier.generate_evidence_package(verification)
     print(f"  Evidence package generated ({len(json.dumps(evidence))} bytes)")
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # ATTRIBUTION
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     if verification["result"] == "CRYPTOGRAPHICALLY VERIFIED":
         attributed_key = verification.get("recipient_key_id", "unknown")
         attributed_name = None
@@ -392,9 +392,9 @@ def main():
 
     # Cleanup
     ledger.close()
-    print(f"\n{'═' * 65}")
+    print(f"\n{'=' * 65}")
     print(f"  MVP Demo Complete")
-    print(f"{'═' * 65}\n")
+    print(f"{'=' * 65}\n")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 """
-TraceVault — Local Hash-Chain Ledger (MVP)
-==========================================
+SKY-VAULT : Local Hash-Chain Ledger (MVP)
+=========================================
 A local, tamper-evident hash-chained ledger that mirrors the data model
 of Hyperledger Fabric for the MVP prototype. This can be swapped for
 an actual Hyperledger Fabric network in production.
@@ -11,7 +11,7 @@ Properties:
   - The chain can be independently verified.
   - SQLite storage for persistence (air-gapped, no external DB).
 
-Reference: TraceVault spec Section 10 — Permissioned BFT Distributed Ledger.
+Reference: SKY-VAULT spec Section 10 : Permissioned BFT Distributed Ledger.
 
 Production upgrade path: Replace this module with fabric_gateway.py
 that connects to a real Hyperledger Fabric network with SmartBFT ordering.
@@ -72,7 +72,7 @@ class Block:
 
 class LocalLedger:
     """
-    SQLite-backed hash-chain ledger for TraceVault MVP.
+    SQLite-backed hash-chain ledger for SKY-VAULT MVP.
     
     Mimics the Hyperledger Fabric data model:
     - Blocks are hash-chained.
@@ -129,7 +129,7 @@ class LocalLedger:
             block_id=0,
             previous_hash=GENESIS_HASH,
             timestamp=datetime.now(timezone.utc).isoformat(),
-            event_data={"type": "genesis", "message": "TraceVault Ledger Initialized"},
+            event_data={"type": "genesis", "message": "SKY-VAULT Ledger Initialized"},
         )
         self._store_block(genesis)
 
@@ -403,5 +403,5 @@ if __name__ == "__main__":
     for b in proof["proof_blocks"]:
         print(f"  Block #{b['block_id']}: {b['block_hash'][:32]}...")
 
-    print("\n✓ Ledger test complete!")
+    print("\n[PASS] Ledger test complete!")
     ledger.close()

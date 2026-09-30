@@ -1,0 +1,18 @@
+services:
+  sky-vault:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sky-vault
+    ports:
+      - "5000:5000"
+    environment:
+      - PYTHONIOENCODING=utf-8
+      - PORT=5000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

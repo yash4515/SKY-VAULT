@@ -1,10 +1,10 @@
 """
-TraceVault — Evidence Verifier
+SKY-VAULT - Evidence Verifier
 ===============================
 Verifies the complete cryptographic evidence chain for a forensic case.
 
-Reference: TraceVault spec Section 13 — Forensic Investigation Workflow
-and Section 14 — Independent Evidence Package.
+Reference: SKY-VAULT spec Section 13 - Forensic Investigation Workflow
+and Section 14 - Independent Evidence Package.
 
 Verification steps:
   1. Verify watermark ID resolves to a ledger event.
@@ -36,10 +36,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class ForensicVerifier:
     """
-    Independent evidence verifier for TraceVault.
+    Independent evidence verifier for SKY-VAULT.
     
     "The evidence verifier should be a separate component from the 
-     decryption and ledger-management services." — Section 14
+     decryption and ledger-management services." - Section 14
     """
 
     def __init__(self, pqc_manager=None, ledger=None, key_registry: dict = None):
@@ -218,7 +218,7 @@ class ForensicVerifier:
             "status": "PASSED",
             "key_id": recipient_key_id,
             "key_status": "ACTIVE",
-            "note": "MVP — full PKI/CRL check not implemented",
+            "note": "MVP - full PKI/CRL check not implemented",
         }
 
     def _verify_chain_integrity(self, block_id: int = None) -> dict:
@@ -249,17 +249,17 @@ class ForensicVerifier:
         Generate a structured evidence package (Section 14).
 
         evidence/
-        ├── leaked_document.sha3
-        ├── extracted_fingerprint.bin
-        ├── extraction_report.json
-        ├── canonical_event.json
-        ├── event_digest.txt
-        ├── recipient_certificate_or_public_key
-        ├── ML-DSA_signature.bin
-        ├── ledger_transaction.json
-        ├── ledger_block_proof.json
-        ├── key_status_evidence.json
-        └── verification_report.json
+        |-- leaked_document.sha3
+        |-- extracted_fingerprint.bin
+        |-- extraction_report.json
+        |-- canonical_event.json
+        |-- event_digest.txt
+        |-- recipient_certificate_or_public_key
+        |-- ML-DSA_signature.bin
+        |-- ledger_transaction.json
+        |-- ledger_block_proof.json
+        |-- key_status_evidence.json
+        +-- verification_report.json
         """
         package = {
             "package_version": "1.0",
@@ -290,7 +290,7 @@ class ForensicVerifier:
         """Format the verification report as a human-readable string."""
         lines = [
             "=" * 60,
-            "  TRACEVAULT — FORENSIC VERIFICATION REPORT",
+            "  SKY-VAULT - FORENSIC VERIFICATION REPORT",
             "=" * 60,
             "",
             f"  Timestamp:       {report.get('verification_timestamp', 'N/A')}",
@@ -303,17 +303,17 @@ class ForensicVerifier:
         ]
 
         for step in report.get("steps", []):
-            icon = "✓" if step["status"] == "PASSED" else "✗" if step["status"] == "FAILED" else "–"
+            icon = "[PASS]" if step["status"] == "PASSED" else "[FAIL]" if step["status"] == "FAILED" else "[-]"
             lines.append(f"    {icon} {step['step']}: {step['status']}")
             if "reason" in step:
                 lines.append(f"      Reason: {step['reason']}")
 
         lines.extend([
             "",
-            f"  ┌{'─' * 56}┐",
-            f"  │  RESULT: {report['result']:<44}│",
-            f"  │  Confidence: {report['confidence']:<41}│",
-            f"  └{'─' * 56}┘",
+            f"  +--------------------------------------------------------+",
+            f"  |  RESULT: {report['result']:<46}|",
+            f"  |  Confidence: {report['confidence']:<43}|",
+            f"  +--------------------------------------------------------+",
             "",
         ])
 

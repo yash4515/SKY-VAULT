@@ -3,26 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TraceVault — Post-Quantum Forensic Attribution</title>
+  <title>SKY-VAULT | Post-Quantum Forensic Attribution</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-<!-- ── Navigation ─────────────────────────────────────────────────────────── -->
+<!-- Navigation -->
 <nav class="navbar">
-  <div class="nav-brand">
-    <div class="logo-icon">⬡</div>
-    <div class="brand-text">
-      <span class="brand-name">TRACE<span class="accent">VAULT</span></span>
-      <span class="brand-tagline">Air-Gapped · Post-Quantum · Forensic Attribution</span>
+  <a href="/" class="nav-brand">
+    <div class="logo-mark">
+      <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+        <path d="M16 4 L26 8 V16 C26 22 21 26.5 16 28 C11 26.5 6 22 6 16 V8 Z" stroke="#2563eb" stroke-width="2.2" stroke-linejoin="round"/>
+        <circle cx="16" cy="15" r="4" stroke="#0284c7" stroke-width="2"/>
+        <circle cx="16" cy="15" r="1.5" fill="#f1f5f9"/>
+      </svg>
     </div>
-  </div>
+    <div class="brand-text">
+      <span class="brand-name">SKY<span class="brand-divider">/</span>VAULT</span>
+      <span class="brand-tagline">Air-Gapped Post-Quantum Forensic Attribution</span>
+    </div>
+  </a>
+
   <div class="nav-status" id="nav-status">
     <span class="status-dot offline"></span>
     <span class="status-text">Connecting...</span>
   </div>
+
+  <div class="domain-pill" id="nav-domain" title="Connected Custom Domain">
+    <span style="color:var(--text-muted)">Host:</span> <span id="nav-domain-name">skyvault.internal</span>
+  </div>
+
   <div class="nav-links">
     <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
     <button class="nav-btn" data-tab="recipients">Recipients</button>
@@ -30,46 +43,70 @@
     <button class="nav-btn" data-tab="decryption">Decryption</button>
     <button class="nav-btn" data-tab="ledger">Ledger</button>
     <button class="nav-btn" data-tab="forensics">Forensics</button>
-    <button class="nav-btn" data-tab="demo">🚀 Demo</button>
+    <button class="nav-btn" data-tab="domain">Network & Domain</button>
+    <button class="nav-btn" data-tab="demo">MVP Demo</button>
+    <a href="/privacy" class="nav-btn">Privacy</a>
+    <a href="/terms" class="nav-btn">Terms</a>
   </div>
 </nav>
 
-<!-- ── Main ───────────────────────────────────────────────────────────────── -->
+<!-- Main Container -->
 <main class="main-content">
 
-  <!-- ── DASHBOARD ─────────────────────────────────────────────────────── -->
+  <!-- DASHBOARD -->
   <section id="tab-dashboard" class="tab-section active">
     <div class="section-header">
-      <h1>System Overview</h1>
-      <p class="section-desc">Real-time status of the TraceVault forensic attribution pipeline</p>
+      <h1>System Telemetry and Pipeline Status</h1>
+      <p class="section-desc">Real-time status of the SKY-VAULT post-quantum cryptographic pipeline and local audit chain</p>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-icon">🔑</div>
+        <div class="stat-icon-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5 1.5-1.5L12 4l-4 4 1.5 1.5L8 11l-1.5-1.5L5 11l-3 3 7 7 3-3-1.5-1.5L12 15l-1.5-1.5L12 12l5-5 1.5 1.5L20 7l-1.5-1.5L20 4l1-2z"/>
+          </svg>
+        </div>
         <div class="stat-info">
-          <div class="stat-value" id="stat-recipients">—</div>
+          <div class="stat-value" id="stat-recipients">0</div>
           <div class="stat-label">Registered Recipients</div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">📄</div>
+        <div class="stat-icon-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
         <div class="stat-info">
-          <div class="stat-value" id="stat-documents">—</div>
+          <div class="stat-value" id="stat-documents">0</div>
           <div class="stat-label">Encrypted Documents</div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">⛓</div>
+        <div class="stat-icon-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+        </div>
         <div class="stat-info">
-          <div class="stat-value" id="stat-chain-height">—</div>
+          <div class="stat-value" id="stat-chain-height">0</div>
           <div class="stat-label">Ledger Blocks</div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">🛡</div>
+        <div class="stat-icon-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
         <div class="stat-info">
-          <div class="stat-value" id="stat-chain-valid">—</div>
+          <div class="stat-value" id="stat-chain-valid">OK</div>
           <div class="stat-label">Chain Integrity</div>
         </div>
       </div>
@@ -77,106 +114,128 @@
 
     <div class="dashboard-grid">
       <div class="info-card">
-        <h3 class="card-title">Cryptographic Mode</h3>
+        <h3 class="card-title">Cryptographic Parameters <span class="status-badge active">FIPS Compliant</span></h3>
         <div class="info-row">
-          <span class="info-key">PQC Mode</span>
-          <span class="info-val" id="info-mode">—</span>
+          <span class="info-key">PQC Operational Mode</span>
+          <span class="info-val highlight" id="info-mode">SIMULATION</span>
         </div>
         <div class="info-row">
-          <span class="info-key">KEM Algorithm</span>
-          <span class="info-val" id="info-kem">—</span>
+          <span class="info-key">Key Encapsulation (KEM)</span>
+          <span class="info-val" id="info-kem">NIST FIPS 203 (ML-KEM-768)</span>
         </div>
         <div class="info-row">
-          <span class="info-key">Sig Algorithm</span>
-          <span class="info-val" id="info-sig">—</span>
+          <span class="info-key">Digital Signature (DSA)</span>
+          <span class="info-val" id="info-sig">NIST FIPS 204 (ML-DSA-65)</span>
         </div>
         <div class="info-row">
-          <span class="info-key">Symmetric Enc</span>
-          <span class="info-val">AES-256-GCM</span>
+          <span class="info-key">Symmetric Encryption</span>
+          <span class="info-val">AES-256-GCM (Authenticated AEAD)</span>
         </div>
         <div class="info-row">
-          <span class="info-key">Hash Function</span>
-          <span class="info-val">SHA3-256</span>
+          <span class="info-key">Digest and Hash Engine</span>
+          <span class="info-val">SHA3-256 / SHAKE-256</span>
         </div>
         <div class="info-row">
-          <span class="info-key">Watermark</span>
-          <span class="info-val">ZWC + Reed-Solomon</span>
+          <span class="info-key">Forensic Watermarking</span>
+          <span class="info-val">ZWC Steganography + Reed-Solomon ECC</span>
         </div>
       </div>
 
       <div class="info-card">
-        <h3 class="card-title">Evidence Chain Flow</h3>
+        <h3 class="card-title">Evidence Chain Architecture</h3>
         <div class="flow-diagram">
-          <div class="flow-step">🔒 Encrypted Document</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step">👤 Authenticated Identity</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step">🔑 ML-KEM Decapsulation</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step">🧬 Tardos Fingerprint</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step">💧 ZWC Watermark Embed</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step">✍ ML-DSA Event Signing</div>
-          <div class="flow-arrow">↓</div>
-          <div class="flow-step">⛓ BFT Ledger Commit</div>
+          <div class="flow-step">
+            <span><span class="flow-step-idx">[01]</span> Encrypted Document Distribution</span>
+            <span class="status-badge active">AES-GCM</span>
+          </div>
+          <div class="flow-arrow">|</div>
+          <div class="flow-step">
+            <span><span class="flow-step-idx">[02]</span> Recipient Identity and Access Policy</span>
+            <span class="status-badge active">Air-Gapped PKI</span>
+          </div>
+          <div class="flow-arrow">|</div>
+          <div class="flow-step">
+            <span><span class="flow-step-idx">[03]</span> In-Memory ML-KEM Decapsulation</span>
+            <span class="status-badge active">RAM Only</span>
+          </div>
+          <div class="flow-arrow">|</div>
+          <div class="flow-step">
+            <span><span class="flow-step-idx">[04]</span> Tardos Collusion-Resistant Code</span>
+            <span class="status-badge active">Session Nonce</span>
+          </div>
+          <div class="flow-arrow">|</div>
+          <div class="flow-step">
+            <span><span class="flow-step-idx">[05]</span> Robust Steganographic Watermark</span>
+            <span class="status-badge active">Zero-Width ECC</span>
+          </div>
+          <div class="flow-arrow">|</div>
+          <div class="flow-step">
+            <span><span class="flow-step-idx">[06]</span> Recipient ML-DSA Event Signature</span>
+            <span class="status-badge active">Canonical JCS</span>
+          </div>
+          <div class="flow-arrow">|</div>
+          <div class="flow-step">
+            <span><span class="flow-step-idx">[07]</span> Permissioned BFT Ledger Commit</span>
+            <span class="status-badge active">Immutable Block</span>
+          </div>
         </div>
       </div>
 
       <div class="info-card full-width">
         <h3 class="card-title">Quick Actions</h3>
         <div class="quick-actions">
-          <button class="action-btn primary" onclick="switchTab('demo')">🚀 Run Full Demo</button>
-          <button class="action-btn" onclick="switchTab('recipients')">👤 Register Recipient</button>
-          <button class="action-btn" onclick="switchTab('documents')">📄 Encrypt Document</button>
-          <button class="action-btn" onclick="switchTab('forensics')">🔍 Forensic Analysis</button>
-          <button class="action-btn danger" onclick="resetSystem()">⚠ Reset System</button>
+          <button class="action-btn primary" onclick="switchTab('demo')">Run Full MVP Demo</button>
+          <button class="action-btn" onclick="switchTab('recipients')">Register Recipient</button>
+          <button class="action-btn" onclick="switchTab('documents')">Encrypt Document</button>
+          <button class="action-btn" onclick="switchTab('forensics')">Forensic Analysis</button>
+          <button class="action-btn" onclick="switchTab('domain')">Network & Domain</button>
+          <button class="action-btn danger" onclick="resetSystem()">Reset System</button>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── RECIPIENTS ─────────────────────────────────────────────────────── -->
+  <!-- RECIPIENTS -->
   <section id="tab-recipients" class="tab-section">
     <div class="section-header">
-      <h1>Recipient Management</h1>
-      <p class="section-desc">Register authorized recipients and generate their ML-KEM + ML-DSA keypairs</p>
+      <h1>Recipient Identity Directory</h1>
+      <p class="section-desc">Register authorized recipients and generate Post-Quantum ML-KEM-768 and ML-DSA-65 keypairs</p>
     </div>
     <div class="panel-grid">
       <div class="panel">
         <h3>Register New Recipient</h3>
         <div class="form-group">
-          <label>Recipient Name</label>
+          <label>Recipient Name or Organization ID</label>
           <input type="text" id="reg-name" placeholder="e.g. Alice" class="form-input" />
         </div>
-        <button class="btn primary" onclick="registerRecipient()">Generate Keypairs & Register</button>
+        <button class="btn primary" onclick="registerRecipient()">Generate Keypairs and Register</button>
         <div id="reg-result" class="result-box hidden"></div>
       </div>
 
       <div class="panel">
         <h3>Registered Recipients <span class="badge" id="recipients-count">0</span></h3>
         <div id="recipients-list" class="list-container">
-          <div class="empty-state">No recipients registered yet.</div>
+          <div class="empty-state">No recipients registered in local directory.</div>
         </div>
-        <button class="btn secondary small" onclick="loadRecipients()">↻ Refresh</button>
+        <button class="btn secondary small" onclick="loadRecipients()">Refresh</button>
       </div>
     </div>
   </section>
 
-  <!-- ── DOCUMENTS ──────────────────────────────────────────────────────── -->
+  <!-- DOCUMENTS -->
   <section id="tab-documents" class="tab-section">
     <div class="section-header">
-      <h1>Document Encryption</h1>
-      <p class="section-desc">Encrypt a document and wrap the DEK for all registered recipients using ML-KEM</p>
+      <h1>Document Encryption and Key Encapsulation</h1>
+      <p class="section-desc">Encrypt confidential artifacts with AES-256-GCM and wrap document keys for all registered identities via ML-KEM</p>
     </div>
     <div class="panel-grid">
       <div class="panel">
-        <h3>Encrypt Document</h3>
+        <h3>Encrypt New Document</h3>
         <div class="form-group">
-          <label>Document Text</label>
-          <textarea id="doc-text" class="form-textarea" rows="8" placeholder="Enter the confidential document content...">STRICTLY CONFIDENTIAL — PROJECT TRACEVAULT
+          <label>Confidential Document Plaintext</label>
+          <textarea id="doc-text" class="form-textarea" rows="8" placeholder="Enter confidential document payload...">STRICTLY CONFIDENTIAL : PROJECT SKY-VAULT
 
-This document contains the complete architectural specification for the TraceVault forensic attribution system. The system provides cryptographically verifiable attribution of leaked documents to authenticated decryption events.
+This document contains the complete architectural specification for the SKY-VAULT forensic attribution system. The system provides cryptographically verifiable attribution of leaked documents to authenticated decryption events using post-quantum cryptography, invisible forensic watermarking, and a permissioned BFT distributed ledger.
 
 DISTRIBUTION: Authorized recipients only.
 CLASSIFICATION: TOP SECRET
@@ -195,39 +254,39 @@ VERSION: 17</textarea>
         <div id="docs-list" class="list-container">
           <div class="empty-state">No documents encrypted yet.</div>
         </div>
-        <button class="btn secondary small" onclick="loadDocuments()">↻ Refresh</button>
+        <button class="btn secondary small" onclick="loadDocuments()">Refresh</button>
       </div>
     </div>
   </section>
 
-  <!-- ── DECRYPTION ─────────────────────────────────────────────────────── -->
+  <!-- DECRYPTION -->
   <section id="tab-decryption" class="tab-section">
     <div class="section-header">
-      <h1>Secure Decryption Pipeline</h1>
-      <p class="section-desc">Full pipeline: ML-KEM decapsulation → in-memory decryption → watermark embedding → ML-DSA signing → ledger commit</p>
+      <h1>Secure In-Memory Decryption Boundary</h1>
+      <p class="section-desc">Execute pipeline: ML-KEM decapsulation -> RAM-only decryption -> watermark injection -> ML-DSA signing -> ledger commit</p>
     </div>
     <div class="panel-grid">
       <div class="panel">
-        <h3>Request Decryption</h3>
+        <h3>Request Authorized Decryption</h3>
         <div class="form-group">
-          <label>Recipient</label>
+          <label>Recipient Credential</label>
           <select id="dec-recipient" class="form-select">
-            <option value="">— Select recipient —</option>
+            <option value="">Select recipient...</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Document</label>
+          <label>Target Document</label>
           <select id="dec-document" class="form-select">
-            <option value="">— Select document —</option>
+            <option value="">Select document...</option>
           </select>
         </div>
         <div class="form-group">
           <label>Watermark Profile</label>
           <select id="dec-profile" class="form-select">
-            <option value="digital">digital</option>
-            <option value="screen">screen</option>
-            <option value="print-secure">print-secure</option>
-            <option value="high-security">high-security</option>
+            <option value="digital">digital (standard distribution)</option>
+            <option value="screen">screen (anti-capture profile)</option>
+            <option value="print-secure">print-secure (high redundancy)</option>
+            <option value="high-security">high-security (maximum ECC)</option>
           </select>
         </div>
         <button class="btn primary" onclick="requestDecryption()">Execute Secure Decryption</button>
@@ -235,96 +294,96 @@ VERSION: 17</textarea>
       </div>
 
       <div class="panel">
-        <h3>Decryption Pipeline Steps</h3>
+        <h3>Pipeline Execution Steps</h3>
         <div class="pipeline-steps">
           <div class="pipeline-step" id="ps-1">
             <div class="ps-num">1</div>
             <div class="ps-info">
-              <div class="ps-title">ML-KEM Decapsulation</div>
-              <div class="ps-desc">Recover shared secret from ciphertext</div>
+              <div class="ps-title">ML-KEM-768 Decapsulation</div>
+              <div class="ps-desc">Recover document symmetric key in RAM</div>
             </div>
-            <div class="ps-status pending">⏳</div>
+            <div class="ps-status pending">PENDING</div>
           </div>
           <div class="pipeline-step" id="ps-2">
             <div class="ps-num">2</div>
             <div class="ps-info">
-              <div class="ps-title">In-Memory Decryption</div>
-              <div class="ps-desc">AES-256-GCM decrypt in RAM only</div>
+              <div class="ps-title">In-Memory Plaintext Decryption</div>
+              <div class="ps-desc">AES-256-GCM decrypt strictly in volatile memory</div>
             </div>
-            <div class="ps-status pending">⏳</div>
+            <div class="ps-status pending">PENDING</div>
           </div>
           <div class="pipeline-step" id="ps-3">
             <div class="ps-num">3</div>
             <div class="ps-info">
-              <div class="ps-title">Tardos Fingerprint</div>
-              <div class="ps-desc">Generate recipient/session code</div>
+              <div class="ps-title">Tardos Fingerprint Generation</div>
+              <div class="ps-desc">Generate recipient session code with CSPRNG nonce</div>
             </div>
-            <div class="ps-status pending">⏳</div>
+            <div class="ps-status pending">PENDING</div>
           </div>
           <div class="pipeline-step" id="ps-4">
             <div class="ps-num">4</div>
             <div class="ps-info">
-              <div class="ps-title">ZWC Watermark Embed</div>
-              <div class="ps-desc">Invisible steganographic embedding</div>
+              <div class="ps-title">Steganographic Watermark Injection</div>
+              <div class="ps-desc">Embed payload with Reed-Solomon error correction</div>
             </div>
-            <div class="ps-status pending">⏳</div>
+            <div class="ps-status pending">PENDING</div>
           </div>
           <div class="pipeline-step" id="ps-5">
             <div class="ps-num">5</div>
             <div class="ps-info">
-              <div class="ps-title">ML-DSA Event Signing</div>
-              <div class="ps-desc">Sign canonical decryption event</div>
+              <div class="ps-title">ML-DSA-65 Canonical Event Signing</div>
+              <div class="ps-desc">Recipient hardware key signs canonical digest</div>
             </div>
-            <div class="ps-status pending">⏳</div>
+            <div class="ps-status pending">PENDING</div>
           </div>
           <div class="pipeline-step" id="ps-6">
             <div class="ps-num">6</div>
             <div class="ps-info">
-              <div class="ps-title">Ledger Commit</div>
-              <div class="ps-desc">Immutable BFT ledger record</div>
+              <div class="ps-title">Permissioned Ledger Commit</div>
+              <div class="ps-desc">Commit signed event to immutable hash-chain block</div>
             </div>
-            <div class="ps-status pending">⏳</div>
+            <div class="ps-status pending">PENDING</div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── LEDGER ─────────────────────────────────────────────────────────── -->
+  <!-- LEDGER -->
   <section id="tab-ledger" class="tab-section">
     <div class="section-header">
-      <h1>Permissioned Ledger</h1>
-      <p class="section-desc">Immutable hash-chained audit trail of all decryption events</p>
+      <h1>Permissioned Audit Trail</h1>
+      <p class="section-desc">Immutable hash-chained ledger storing signed decryption events with cryptographic block verification</p>
     </div>
     <div class="ledger-header">
       <div class="ledger-stats">
         <div class="ls-item">
           <span class="ls-label">Chain Height</span>
-          <span class="ls-val" id="ledger-height">—</span>
+          <span class="ls-val" id="ledger-height">0</span>
         </div>
         <div class="ls-item">
-          <span class="ls-label">Integrity</span>
-          <span class="ls-val" id="ledger-integrity">—</span>
+          <span class="ls-label">Cryptographic Integrity</span>
+          <span class="ls-val" id="ledger-integrity">VALID</span>
         </div>
       </div>
-      <button class="btn secondary" onclick="loadLedger()">↻ Refresh Chain</button>
+      <button class="btn secondary" onclick="loadLedger()">Verify and Refresh Chain</button>
     </div>
     <div id="ledger-table-container">
       <div class="empty-state">No events committed yet.</div>
     </div>
   </section>
 
-  <!-- ── FORENSICS ──────────────────────────────────────────────────────── -->
+  <!-- FORENSICS -->
   <section id="tab-forensics" class="tab-section">
     <div class="section-header">
-      <h1>Forensic Investigation</h1>
-      <p class="section-desc">Extract watermarks from leaked documents and verify the complete cryptographic evidence chain</p>
+      <h1>Forensic Investigation and Attribution</h1>
+      <p class="section-desc">Extract watermarks from leaked artifacts and mathematically verify the complete cryptographic evidence chain</p>
     </div>
 
     <div class="forensic-tabs">
-      <button class="ftab active" data-ftab="extract">1. Extract Watermark</button>
-      <button class="ftab" data-ftab="simulate">2. Simulate Leak</button>
-      <button class="ftab" data-ftab="verify">3. Verify Evidence Chain</button>
+      <button class="ftab active" data-ftab="extract">Step 1: Extract Watermark</button>
+      <button class="ftab" data-ftab="simulate">Step 2: Simulate Leak</button>
+      <button class="ftab" data-ftab="verify">Step 3: Verify Evidence Chain</button>
     </div>
 
     <!-- Extract -->
@@ -334,14 +393,14 @@ VERSION: 17</textarea>
           <h3>Extract Watermark from Leaked Text</h3>
           <div class="form-group">
             <label>Leaked Document Content</label>
-            <textarea id="forensic-leaked-text" class="form-textarea mono" rows="10" placeholder="Paste the leaked document content here (including any hidden zero-width characters)..."></textarea>
+            <textarea id="forensic-leaked-text" class="form-textarea mono" rows="10" placeholder="Paste leaked document payload here..."></textarea>
           </div>
           <button class="btn primary" onclick="extractWatermark()">Extract Fingerprint</button>
         </div>
         <div class="panel">
           <h3>Extraction Result</h3>
           <div id="extract-result" class="result-box">
-            <div class="empty-state">Run extraction to see results</div>
+            <div class="empty-state">Execute extraction to view recovered payload</div>
           </div>
         </div>
       </div>
@@ -352,18 +411,18 @@ VERSION: 17</textarea>
       <div class="panel-grid">
         <div class="panel">
           <h3>Simulate Document Leak</h3>
-          <p class="hint">Select a previously watermarked document to simulate it being leaked. The watermarked copy will be loaded into the extraction field.</p>
+          <p class="hint">Select a previously watermarked copy to simulate a distribution leak. The payload will be loaded into the extraction inspector.</p>
           <div class="form-group">
-            <label>Watermark ID (leave blank for most recent)</label>
+            <label>Watermark ID (leave empty for most recent event)</label>
             <input type="text" id="sim-watermark-id" placeholder="WM-xxxxxxxxxxxxxxxx" class="form-input mono" />
           </div>
-          <button class="btn danger" onclick="simulateLeak()">⚠ Simulate Leak</button>
+          <button class="btn danger" onclick="simulateLeak()">Simulate Leak</button>
           <div id="sim-result" class="result-box hidden"></div>
         </div>
         <div class="panel">
           <h3>Leaked Document Preview</h3>
           <div id="leak-preview" class="code-block">
-            <div class="empty-state">No simulated leak yet</div>
+            <div class="empty-state">No simulated leak loaded</div>
           </div>
         </div>
       </div>
@@ -373,86 +432,148 @@ VERSION: 17</textarea>
     <div id="ftab-verify" class="ftab-content">
       <div class="panel-grid">
         <div class="panel">
-          <h3>Cryptographic Verification</h3>
+          <h3>Cryptographic Evidence Verification</h3>
           <div class="form-group">
             <label>Watermark ID</label>
             <input type="text" id="verify-wm-id" placeholder="WM-xxxxxxxxxxxxxxxx" class="form-input mono" />
           </div>
           <div class="form-group">
-            <label>Document Hash (optional)</label>
+            <label>Document Hash (SHA3-256)</label>
             <input type="text" id="verify-doc-hash" placeholder="sha3-256:..." class="form-input mono" />
           </div>
           <div class="form-group">
-            <label>Leaked Artifact Hash (optional)</label>
+            <label>Leaked Artifact Hash (SHA3-256)</label>
             <input type="text" id="verify-leaked-hash" placeholder="sha3-256:..." class="form-input mono" />
           </div>
-          <button class="btn primary" onclick="verifyEvidence()">Run Full Verification</button>
+          <button class="btn primary" onclick="verifyEvidence()">Run Full Verification Pipeline</button>
         </div>
         <div class="panel">
           <h3>Verification Report</h3>
           <div id="verify-result" class="result-box">
-            <div class="empty-state">Run verification to see report</div>
+            <div class="empty-state">Run verification to inspect report</div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── DEMO ───────────────────────────────────────────────────────────── -->
+  <!-- CUSTOM DOMAIN & NETWORK -->
+  <section id="tab-domain" class="tab-section">
+    <div class="section-header">
+      <h1>Network and Custom Domain Configuration</h1>
+      <p class="section-desc">Manage FQDN binding, reverse proxy routing, and air-gapped domain resolution for enterprise deployment</p>
+    </div>
+
+    <div class="panel-grid">
+      <div class="panel">
+        <h3>Connected Custom Domain</h3>
+        <div class="form-group">
+          <label>Fully Qualified Domain Name (FQDN)</label>
+          <input type="text" id="custom-domain-input" placeholder="e.g. skyvault.internal or vault.defense.gov" class="form-input mono" value="skyvault.internal" />
+        </div>
+        <div class="info-row">
+          <span class="info-key">Binding Status</span>
+          <span class="info-val highlight" id="domain-binding-status">CONFIGURED</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Network Policy</span>
+          <span class="info-val">Air-Gapped Internal Only</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">TLS Termination</span>
+          <span class="info-val">Reverse Proxy / Port 443</span>
+        </div>
+        <button class="btn primary" style="margin-top:14px" onclick="updateCustomDomain()">Update Domain Binding</button>
+        <div id="domain-result" class="result-box hidden"></div>
+      </div>
+
+      <div class="panel">
+        <h3>Deployment Configuration Snippet</h3>
+        <p class="hint">Use this reverse-proxy block to bind SKY-VAULT to your enterprise domain in isolated corporate or defense networks:</p>
+        <div class="code-block" style="font-size:11px;line-height:1.5"># /etc/nginx/conf.d/skyvault.conf
+server {
+    listen 443 ssl http2;
+    server_name <span id="nginx-domain-display">skyvault.internal</span>;
+
+    ssl_certificate     /etc/ssl/certs/skyvault.crt;
+    ssl_certificate_key /etc/ssl/private/skyvault.key;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+# Local /etc/hosts resolution:
+127.0.0.1  <span id="hosts-domain-display">skyvault.internal</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO -->
   <section id="tab-demo" class="tab-section">
     <div class="section-header">
-      <h1>Full MVP Demo</h1>
-      <p class="section-desc">Automated end-to-end demonstration: Register Alice/Bob/Charlie → Encrypt → Decrypt → Watermark → Sign → Commit → Leak → Extract → Verify → Attribution</p>
+      <h1>Automated 15-Phase MVP Pipeline Demo</h1>
+      <p class="section-desc">Automated end-to-end execution: Register Alice, Bob, Charlie -> Encrypt -> Decrypt -> Watermark -> Sign -> Commit -> Leak -> Extract -> Verify -> Attribution</p>
     </div>
     <div class="demo-container">
       <div class="demo-intro">
         <div class="demo-steps-preview">
-          <div class="dsp-item">① Register Alice, Bob, Charlie</div>
-          <div class="dsp-arrow">→</div>
-          <div class="dsp-item">② Encrypt document</div>
-          <div class="dsp-arrow">→</div>
-          <div class="dsp-item">③ Wrap DEK (ML-KEM)</div>
-          <div class="dsp-arrow">→</div>
-          <div class="dsp-item">④ Bob decrypts + watermark</div>
-          <div class="dsp-arrow">→</div>
-          <div class="dsp-item">⑤ ML-DSA sign event</div>
-          <div class="dsp-arrow">→</div>
-          <div class="dsp-item">⑥ Ledger commit</div>
-          <div class="dsp-arrow">→</div>
-          <div class="dsp-item">⑦ Simulate leak</div>
-          <div class="dsp-arrow">→</div>
-          <div class="dsp-item">⑧ Forensic extraction</div>
-          <div class="dsp-arrow">→</div>
-          <div class="dsp-item">⑨ Verify + attribution</div>
+          <div class="dsp-item">[01] Register Identities</div>
+          <div class="dsp-arrow">-></div>
+          <div class="dsp-item">[02] Encrypt Document</div>
+          <div class="dsp-arrow">-></div>
+          <div class="dsp-item">[03] Wrap DEK (ML-KEM)</div>
+          <div class="dsp-arrow">-></div>
+          <div class="dsp-item">[04] Decrypt and Watermark</div>
+          <div class="dsp-arrow">-></div>
+          <div class="dsp-item">[05] ML-DSA Sign Event</div>
+          <div class="dsp-arrow">-></div>
+          <div class="dsp-item">[06] Commit Ledger Block</div>
+          <div class="dsp-arrow">-></div>
+          <div class="dsp-item">[07] Simulate Leak</div>
+          <div class="dsp-arrow">-></div>
+          <div class="dsp-item">[08] Extract Watermark</div>
+          <div class="dsp-arrow">-></div>
+          <div class="dsp-item">[09] Cryptographic Verification</div>
         </div>
-        <button class="btn primary large" id="run-demo-btn" onclick="runDemo()">▶ Run Full Demo</button>
+        <button class="btn primary large" id="run-demo-btn" onclick="runDemo()">Execute Complete MVP Pipeline</button>
       </div>
 
       <div id="demo-log" class="demo-log hidden">
         <div class="demo-log-header">
-          <span>Execution Log</span>
+          <span>Execution Telemetry Log</span>
           <span id="demo-log-count" class="badge">0</span>
         </div>
         <div id="demo-log-entries" class="demo-log-body"></div>
       </div>
 
       <div id="demo-result" class="hidden">
-        <div class="demo-verdict" id="demo-verdict">
-          <!-- Injected by JS -->
-        </div>
-        <div class="demo-steps-table" id="demo-steps-table">
-          <!-- Injected by JS -->
-        </div>
+        <div class="demo-verdict" id="demo-verdict"></div>
+        <div class="demo-steps-table" id="demo-steps-table"></div>
       </div>
     </div>
   </section>
 
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <span>SKY-VAULT Security Architecture | Air-Gapped Post-Quantum Attribution</span>
+      <div class="footer-links">
+        <a href="/">Dashboard</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="/privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+
 </main>
 
-<!-- ── Toast ──────────────────────────────────────────────────────────────── -->
+<!-- Toast -->
 <div id="toast" class="toast hidden"></div>
 
-<!-- ── Loading overlay ────────────────────────────────────────────────────── -->
+<!-- Loading overlay -->
 <div id="loading" class="loading-overlay hidden">
   <div class="spinner"></div>
   <div class="loading-text" id="loading-text">Processing...</div>

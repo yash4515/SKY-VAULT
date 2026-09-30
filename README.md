@@ -1,4 +1,4 @@
-# TRACEVAULT (SKY-VAULT)
+# SKY-VAULT (SKY-VAULT)
 
 ## Air-Gapped Post-Quantum Forensic Fingerprinting and Immutable Attribution for Secure Document Distribution
 
@@ -12,7 +12,7 @@
 | **Core Technologies** | Robust forensic watermarking, collusion-resistant fingerprinting, ML-KEM, ML-DSA, permissioned BFT DLT |
 | **Primary Assurance Goal** | Cryptographically verifiable attribution of a leaked copy to an authenticated decryption event |
 
-> **Important Scope Statement:** The system establishes a cryptographically verifiable relationship between a leaked copy and an authenticated decryption event. It does *not* claim that a human being physically leaked the file — only that the corresponding recipient-controlled credential authenticated the decryption event.
+> **Important Scope Statement:** The system establishes a cryptographically verifiable relationship between a leaked copy and an authenticated decryption event. It does *not* claim that a human being physically leaked the file - only that the corresponding recipient-controlled credential authenticated the decryption event.
 
 ---
 
@@ -22,7 +22,7 @@ In a multi-recipient broadcast encryption model, a file is encrypted once and sh
 
 ## 2. Our Solution
 
-TraceVault is a cryptographically linked evidence system. It ensures that plaintext is released **only after** a recipient-specific fingerprint has been generated, embedded, cryptographically bound to a signed decryption event, and committed to an immutable audit layer.
+SKY-VAULT is a cryptographically linked evidence system. It ensures that plaintext is released **only after** a recipient-specific fingerprint has been generated, embedded, cryptographically bound to a signed decryption event, and committed to an immutable audit layer.
 
 ### Core Design Principle
 ```

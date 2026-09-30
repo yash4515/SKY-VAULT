@@ -1,5 +1,5 @@
 """
-TraceVault Fingerprint Generator
+SKY-VAULT Fingerprint Generator
 =================================
 Implements the two-layer fingerprint identity model (Section 7)
 and Tardos-style collusion-resistant fingerprint codes (Section 7.2).
@@ -21,7 +21,7 @@ class TardosCodeGenerator:
     """
     Simplified Tardos-style probabilistic fingerprint code generator.
     
-    Reference: Tardos (2003) — Optimal Probabilistic Fingerprint Codes.
+    Reference: Tardos (2003) - Optimal Probabilistic Fingerprint Codes.
     
     The code provides collusion resistance up to 'c' colluding recipients
     with target false-positive probability epsilon.
@@ -104,11 +104,11 @@ class FingerprintGenerator:
     """
     Two-layer fingerprint identity model (Section 7.1):
     
-    Layer 1 — recipient_code: Long-lived, derived from recipient identity
+    Layer 1 - recipient_code: Long-lived, derived from recipient identity
               and distribution context. Optionally uses Tardos codes for
               collusion resistance.
     
-    Layer 2 — session_nonce: Fresh per-decryption CSPRNG value.
+    Layer 2 - session_nonce: Fresh per-decryption CSPRNG value.
     
     session_id = H(document_id || recipient_code || session_nonce || event_nonce)
     

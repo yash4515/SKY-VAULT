@@ -1,1 +1,1 @@
-"""TraceVault Ledger Module"""
+"""SKY-VAULT Ledger Module"""

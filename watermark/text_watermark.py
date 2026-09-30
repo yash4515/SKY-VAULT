@@ -1,5 +1,5 @@
 """
-TraceVault — Text Watermark Engine (Zero-Width Character Steganography)
+SKY-VAULT - Text Watermark Engine (Zero-Width Character Steganography)
 =======================================================================
 Embeds invisible fingerprint payload into text documents using
 zero-width Unicode characters.
@@ -13,7 +13,7 @@ Encoding scheme:
 The payload is ECC-encoded (Reed-Solomon) before embedding for
 robustness against partial text modification.
 
-Reference: TraceVault spec Section 8 — Robust Invisible Watermarking.
+Reference: SKY-VAULT spec Section 8 - Robust Invisible Watermarking.
 """
 
 from reedsolo import RSCodec
@@ -47,7 +47,7 @@ class TextWatermark:
         """
         self.rs = RSCodec(ecc_symbols)
 
-    # ─── Encoding ────────────────────────────────────────────
+    # --- Encoding --------------------------------------------
 
     def _bytes_to_zwc(self, data: bytes) -> str:
         """Convert raw bytes to a zero-width character sequence."""
@@ -76,7 +76,7 @@ class TextWatermark:
                 result.append(int(bits, 2))
         return bytes(result)
 
-    # ─── Embed ───────────────────────────────────────────────
+    # --- Embed -----------------------------------------------
 
     def embed(self, text: str, payload: bytes, position: str = "distributed") -> str:
         """
@@ -171,7 +171,7 @@ class TextWatermark:
 
         return watermarked
 
-    # ─── Extract ─────────────────────────────────────────────
+    # --- Extract ---------------------------------------------
 
     def extract(self, watermarked_text: str) -> Optional[bytes]:
         """
@@ -211,7 +211,7 @@ class TextWatermark:
         except Exception:
             return None
 
-    # ─── Utility ─────────────────────────────────────────────
+    # --- Utility ---------------------------------------------
 
     @staticmethod
     def strip_watermark(text: str) -> str:
@@ -234,7 +234,7 @@ if __name__ == "__main__":
 
     tw = TextWatermark()
 
-    original = "This is a strictly confidential document regarding Project TraceVault. Do not distribute."
+    original = "This is a strictly confidential document regarding Project SKY-VAULT. Do not distribute."
     payload = b"WM-abc123def456"
 
     print(f"Original text ({len(original)} chars):")
@@ -253,4 +253,4 @@ if __name__ == "__main__":
     extracted = tw.extract(watermarked)
     print(f"Extracted payload: {extracted}")
     print(f"Payload match: {extracted == payload}")
-    print(f"\n✓ Round-trip successful!" if extracted == payload else "\n✗ Round-trip FAILED!")
+    print(f"\n[PASS] Round-trip successful!" if extracted == payload else "\n[FAIL] Round-trip FAILED!")

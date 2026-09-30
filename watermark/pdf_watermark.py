@@ -1,5 +1,5 @@
 """
-TraceVault — PDF Watermark Engine
+SKY-VAULT - PDF Watermark Engine
 ==================================
 Renders PDF pages to images, applies DWT/DCT forensic watermark,
 and reconstructs the watermarked PDF.
@@ -60,7 +60,7 @@ class PDFWatermark:
     def __init__(
         self,
         profile: str = "digital",
-        seed_key: bytes = b"tracevault-default-key",
+        seed_key: bytes = b"sky-vault-default-key",
     ):
         """
         Args:
@@ -208,7 +208,7 @@ if __name__ == "__main__":
         buf = io.BytesIO()
         c = rl_canvas.Canvas(buf, pagesize=letter)
         c.setFont("Helvetica", 24)
-        c.drawString(100, 700, "CONFIDENTIAL - TraceVault Test Document")
+        c.drawString(100, 700, "CONFIDENTIAL - SKY-VAULT Test Document")
         c.setFont("Helvetica", 14)
         c.drawString(100, 650, "This document is protected by forensic watermarking.")
         c.drawString(100, 620, "Any unauthorized distribution will be traced.")
@@ -239,4 +239,4 @@ if __name__ == "__main__":
         extracted = pdf_wm.extract_from_pdf(test_pdf, watermarked_pdf, len(payload))
         print(f"Extracted payload: {extracted}")
         print(f"Match: {extracted == payload}")
-        print(f"\n{'✓ PDF round-trip successful!' if extracted == payload else '✗ PDF round-trip FAILED!'}")
+        print(f"\n{'[PASS] PDF round-trip successful!' if extracted == payload else '[FAIL] PDF round-trip FAILED!'}")

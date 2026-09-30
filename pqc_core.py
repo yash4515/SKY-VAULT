@@ -1,5 +1,5 @@
 """
-TraceVault PQC Core Module
+SKY-VAULT PQC Core Module
 ==========================
 Post-Quantum Cryptographic engine implementing:
 - ML-KEM-768 (Kyber) for Key Encapsulation (NIST FIPS 203)
@@ -46,7 +46,7 @@ if _oqs_lib_found:
     except Exception:
         HAS_LIBOQS = False
 else:
-    # Skip import entirely — avoids 30s auto-build timeout
+    # Skip import entirely - avoids 30s auto-build timeout
     pass
 
 
@@ -65,7 +65,7 @@ def canonicalize(obj: dict) -> bytes:
     """
     Deterministic JSON serialization for canonical event signing.
     Uses sorted keys, no whitespace, and ensures_ascii for reproducibility.
-    Reference: TraceVault spec Section 6.3 — "JSON Canonicalization Scheme (JCS) 
+    Reference: SKY-VAULT spec Section 6.3 - "JSON Canonicalization Scheme (JCS) 
     or an equivalent internally specified canonical binary representation."
     """
     return json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode('utf-8')
@@ -76,7 +76,7 @@ def canonicalize(obj: dict) -> bytes:
 # =========================================================
 class _SimulatedKEM:
     """
-    SIMULATION ONLY — NOT CRYPTOGRAPHICALLY SECURE.
+    SIMULATION ONLY - NOT CRYPTOGRAPHICALLY SECURE.
     Mimics ML-KEM API using HMAC-based key derivation for demo purposes.
     Replace with real liboqs in production.
     """
@@ -110,7 +110,7 @@ class _SimulatedKEM:
 
 class _SimulatedSig:
     """
-    SIMULATION ONLY — NOT CRYPTOGRAPHICALLY SECURE.
+    SIMULATION ONLY - NOT CRYPTOGRAPHICALLY SECURE.
     Mimics ML-DSA API using HMAC-based signing for demo purposes.
     """
     
@@ -136,7 +136,7 @@ class _SimulatedSig:
 # =========================================================
 class PQCManager:
     """
-    Core cryptographic engine for TraceVault.
+    Core cryptographic engine for SKY-VAULT.
     Handles key encapsulation, digital signatures, and symmetric encryption.
     
     Uses liboqs when available; falls back to simulation for demos.
@@ -166,7 +166,7 @@ class PQCManager:
         return "liboqs (REAL PQC)" if self.using_liboqs else "SIMULATION (demo only)"
 
     # ---------------------------------------------------------
-    # Key Encapsulation Mechanism — ML-KEM-768 (FIPS 203)
+    # Key Encapsulation Mechanism - ML-KEM-768 (FIPS 203)
     # ---------------------------------------------------------
     def generate_kem_keypair(self) -> tuple:
         """Generates ML-KEM keypair for a recipient."""
@@ -204,7 +204,7 @@ class PQCManager:
             return _SimulatedKEM.decapsulate(ciphertext, recipient_private_key)
 
     # ---------------------------------------------------------
-    # Digital Signatures — ML-DSA-65 (FIPS 204)
+    # Digital Signatures - ML-DSA-65 (FIPS 204)
     # ---------------------------------------------------------
     def generate_sig_keypair(self) -> tuple:
         """Generates ML-DSA keypair for a user."""
@@ -244,7 +244,7 @@ class PQCManager:
             return False
 
     # ---------------------------------------------------------
-    # Symmetric Encryption — AES-256-GCM
+    # Symmetric Encryption - AES-256-GCM
     # ---------------------------------------------------------
     @staticmethod
     def generate_dek() -> bytes:
@@ -279,7 +279,7 @@ class PQCManager:
 class DecryptionEvent:
     """
     Represents the canonical decryption event as defined in 
-    TraceVault spec Section 6.3 and Section 10.4 (Ledger record).
+    SKY-VAULT spec Section 6.3 and Section 10.4 (Ledger record).
     """
 
     def __init__(
@@ -336,7 +336,7 @@ class DecryptionEvent:
 # =========================================================
 if __name__ == "__main__":
     print("=" * 60)
-    print("  TRACEVAULT — PQC Core Smoke Test")
+    print("  SKY-VAULT - PQC Core Smoke Test")
     print("=" * 60)
 
     pqc = PQCManager()

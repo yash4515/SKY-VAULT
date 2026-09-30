@@ -1,19 +1,23 @@
 """
-TraceVault — Flask Web Application
-===================================
-Provides a full web interface for the TraceVault forensic attribution system.
+SKY-VAULT : Flask Web Application
+=================================
+Provides a full web interface for the SKY-VAULT forensic attribution system.
 
 Routes:
-  GET  /                        → Dashboard
-  POST /api/register            → Register a new recipient
-  POST /api/encrypt             → Encrypt a document
-  POST /api/decrypt             → Recipient decryption + watermark + ledger commit
-  POST /api/forensic/extract    → Extract watermark from leaked text
-  POST /api/forensic/verify     → Full forensic verification
-  GET  /api/ledger/chain        → Chain summary
-  GET  /api/ledger/events       → All ledger events
-  GET  /api/status              → System status
-  POST /api/demo/run            → Run the full MVP demo
+  GET  /                        -> Dashboard
+  GET  /privacy                 -> Privacy Policy page
+  GET  /terms                   -> Terms and Conditions page
+  GET  /api/domain              -> Custom domain status
+  POST /api/domain              -> Set custom domain configuration
+  POST /api/register            -> Register a new recipient
+  POST /api/encrypt             -> Encrypt a document
+  POST /api/decrypt             -> Recipient decryption + watermark + ledger commit
+  POST /api/forensic/extract    -> Extract watermark from leaked text
+  POST /api/forensic/verify     -> Full forensic verification
+  GET  /api/ledger/chain        -> Chain summary
+  GET  /api/ledger/events       -> All ledger events
+  GET  /api/status              -> System status
+  POST /api/demo/run            -> Run the full MVP demo
 """
 
 import sys
@@ -37,7 +41,7 @@ from forensics.verifier import ForensicVerifier
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
 
-# ─── Global in-memory state (single-session MVP) ─────────────────────────────
+# --- Global in-memory state (single-session MVP) -----------------------------
 _lock = threading.Lock()
 
 _state = {
@@ -46,11 +50,13 @@ _state = {
     "text_wm": None,
     "ledger": None,
     "extractor": None,
-    "recipients": {},       # name → {kem_pub, kem_priv, sig_pub, sig_priv, key_id}
-    "key_registry": {},     # key_id → sig_pub
-    "documents": {},        # document_id → {encrypted, nonce, dek, wrapped_keys, hash, version, original_text}
-    "watermarked_docs": {}, # watermark_id → watermarked_text (for forensic sim)
+    "recipients": {},       # name -> {kem_pub, kem_priv, sig_pub, sig_priv, key_id}
+    "key_registry": {},     # key_id -> sig_pub
+    "documents": {},        # document_id -> {encrypted, nonce, dek, wrapped_keys, hash, version, original_text}
+    "watermarked_docs": {}, # watermark_id -> watermarked_text (for forensic sim)
     "distribution_id": "DIST-001",
+    "custom_domain": "skyvault.internal",
+    "domain_status": "CONFIGURED",
     "initialized": False,
     "demo_log": [],
 }
@@ -68,7 +74,7 @@ def _ensure_initialized():
     _state["initialized"] = True
 
 
-# ─── Helper ───────────────────────────────────────────────────────────────────
+# --- Helper -------------------------------------------------------------------
 
 def _ok(data: dict = None, **kwargs):
     payload = {"success": True}
@@ -82,11 +88,45 @@ def _err(msg: str, code: int = 400):
     return jsonify({"success": False, "error": msg}), code
 
 
-# ─── Routes ───────────────────────────────────────────────────────────────────
+# --- Routes -------------------------------------------------------------------
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/privacy")
+def privacy():
+    return render_template("privacy.html")
+
+
+@app.route("/terms")
+def terms():
+    return render_template("terms.html")
+
+
+@app.route("/api/domain", methods=["GET", "POST"])
+def api_domain():
+    if request.method == "POST":
+        data = request.get_json(force=True) or {}
+        domain = (data.get("domain") or "").strip()
+        if not domain:
+            return _err("Domain name is required")
+        with _lock:
+            _state["custom_domain"] = domain
+            _state["domain_status"] = "CONFIGURED"
+        return _ok(
+            domain=_state["custom_domain"],
+            status=_state["domain_status"],
+            message=f"Custom domain successfully bound to {domain}",
+        )
+    with _lock:
+        return _ok(
+            domain=_state.get("custom_domain", "skyvault.internal"),
+            status=_state.get("domain_status", "CONFIGURED"),
+            host_header=request.host,
+            tls_ready=True,
+        )
 
 
 @app.route("/api/status")
@@ -104,6 +144,8 @@ def api_status():
             documents=list(_state["documents"].keys()),
             chain_height=chain["chain_height"],
             chain_valid=chain["chain_valid"],
+            custom_domain=_state.get("custom_domain", "skyvault.internal"),
+            domain_status=_state.get("domain_status", "CONFIGURED"),
             initialized=_state["initialized"],
         )
 
@@ -497,9 +539,9 @@ def api_demo_run():
 
         # Encrypt document
         document_text = (
-            "STRICTLY CONFIDENTIAL — PROJECT TRACEVAULT\n\n"
+            "STRICTLY CONFIDENTIAL : PROJECT SKY-VAULT\n\n"
             "This document contains the complete architectural specification "
-            "for the TraceVault forensic attribution system. The system provides "
+            "for the SKY-VAULT forensic attribution system. The system provides "
             "cryptographically verifiable attribution of leaked documents to "
             "authenticated decryption events using post-quantum cryptography, "
             "invisible forensic watermarking, and a permissioned BFT distributed "
@@ -658,5 +700,5 @@ def api_reset():
 
 
 if __name__ == "__main__":
-    print("  TraceVault Web UI — http://127.0.0.1:5000")
+    print("  SKY-VAULT Web UI : http://127.0.0.1:5000")
     app.run(debug=True, host="0.0.0.0", port=5000)

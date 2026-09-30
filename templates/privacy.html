@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy | SKY-VAULT</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="logo-mark">
+      <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+        <path d="M16 4 L26 8 V16 C26 22 21 26.5 16 28 C11 26.5 6 22 6 16 V8 Z" stroke="#2563eb" stroke-width="2.2" stroke-linejoin="round"/>
+        <circle cx="16" cy="15" r="4" stroke="#0284c7" stroke-width="2"/>
+        <circle cx="16" cy="15" r="1.5" fill="#f1f5f9"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <span class="brand-name">SKY<span class="brand-divider">/</span>VAULT</span>
+      <span class="brand-tagline">Air-Gapped Post-Quantum Forensic Attribution</span>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="/" class="nav-btn">Dashboard</a>
+    <a href="/terms" class="nav-btn">Terms</a>
+    <a href="/privacy" class="nav-btn active">Privacy</a>
+  </div>
+</nav>
+
+<main class="main-content legal-container">
+  <div class="section-header">
+    <div class="breadcrumb"><a href="/">SKY-VAULT</a> / Documentation / Privacy Policy</div>
+    <h1>Air-Gapped Privacy and Data Protection Policy</h1>
+    <p class="section-desc">Document Reference: SV-POL-PRIV-1.0 | Effective Date: September 2026 | Classification: Enterprise Air-Gapped Standard</p>
+  </div>
+
+  <div class="legal-card">
+    <div class="legal-section">
+      <h2>1. Architectural Isolation and Zero Telemetry</h2>
+      <p>SKY-VAULT is engineered strictly for air-gapped, post-quantum corporate and defense deployments. The platform enforces the following baseline guarantees:</p>
+      <ul class="legal-list">
+        <li><strong>Zero External Egress:</strong> The system transmits no telemetry, analytics, diagnostic packets, or identity data to external endpoints, cloud services, or centralized public infrastructure.</li>
+        <li><strong>Local Processing Boundary:</strong> All cryptographic operations, key exchanges, and ledger commits execute exclusively on hardware and local networks controlled by the deploying organization.</li>
+        <li><strong>No Third-Party Dependencies:</strong> The platform relies on no public Certificate Authorities, cloud Key Management Systems (KMS), or public blockchains.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>2. Plaintext Handling and Ephemeral Memory Custody</h2>
+      <p>A primary security objective of SKY-VAULT is preventing un-watermarked document leakage at the decryption boundary:</p>
+      <ul class="legal-list">
+        <li><strong>Volatile Memory Only:</strong> Un-watermarked document plaintext exists strictly within volatile RAM during the immediate decryption and steganographic embedding sequence.</li>
+        <li><strong>Zero Non-Volatile Persistence:</strong> Un-watermarked plaintext is never written to disk, paging files, temporary caches, or non-volatile storage media.</li>
+        <li><strong>Cryptographic Memory Purge:</strong> Immediately upon completion of watermark payload injection and output hashing, raw plaintext buffers in memory are overwritten with zeros or cryptographically purged.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>3. Cryptographic Identity and Key Custody</h2>
+      <p>Recipient identities are maintained under strict public key cryptography standards:</p>
+      <ul class="legal-list">
+        <li><strong>Post-Quantum Keypairs:</strong> Public keys (ML-KEM-768 for encapsulation and ML-DSA-65 for signing) are registered in the local organizational directory.</li>
+        <li><strong>Hardware Protection:</strong> Signing private keys remain strictly under recipient control within hardware security modules (HSM) or secure enclave boundaries. Private keys are never exported or accessible to server administrators.</li>
+        <li><strong>Attribution Boundary:</strong> Cryptographic verification establishes that a recipient-controlled credential authenticated a decryption event. The system does not collect biometric or physiological surveillance data.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>4. Immutable Audit Trail and Ledger Storage</h2>
+      <p>The permissioned Byzantine Fault Tolerant (BFT) ledger records canonical decryption events to maintain audit integrity:</p>
+      <ul class="legal-list">
+        <li><strong>Recorded Metadata:</strong> Ledger blocks store the canonical event digest, recipient public key identifier, session nonce hash, watermark identifier, timestamp, and ML-DSA digital signature.</li>
+        <li><strong>Document Confidentiality:</strong> Document content is never written to the ledger. Only one-way SHA3-256 cryptographic digests are stored.</li>
+        <li><strong>Retention Policy:</strong> Ledger records are immutable and retained in accordance with the host organization audit and compliance mandates.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section">
+      <h2>5. Compliance and Operator Inquiries</h2>
+      <p>For questions regarding air-gapped deployment architecture, key lifecycle management, or cryptographic auditing, consult the designated Security Officer or review the technical documentation at the root terminal.</p>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <span>SKY-VAULT Security Architecture | Air-Gapped Release</span>
+      <div class="footer-links">
+        <a href="/">Dashboard</a>
+        <a href="/terms">Terms of Service</a>
+        <a href="/privacy">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+</main>
+
+</body>
+</html>
